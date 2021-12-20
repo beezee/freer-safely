@@ -13,11 +13,11 @@ For example this code
 run_ :: IO ()
 run_ = do 
   (l, w) <- runM . runLogger @Log (emptyLog "Do a sample program") . runSafely $ do
-    x <- safely "Say hi" "Hello" return
-    y <- safeWarn "To the world" "World" return Nothing
-    _ <- safely "Now" (x <> " " <> y) putStrLn
+    x <- safely "Construct the string 'Hello'" "Hello" return
+    y <- safeWarn "Construct the string 'World'" "World" return Nothing
+    _ <- safely "Concat them and print them out" (x <> " " <> y) putStrLn
     _ <- safely @Int "Add 2 to 3" 2 (return . (+3))
-    _ <- safely "Boom" "Big bada boom" error
+    _ <- safely "Do a step that will fail badly" "Big bada boom" error
     told @Log ()
   putStrLn . show $ w
   putStrLn . show $ l
@@ -39,19 +39,19 @@ Hello World
         {
             "aux": {},
             "input": "Hello",
-            "msg": "Say hi",
+            "msg": "Construct the string 'Hello'",
             "level": "Info"
         },
         {
             "aux": {},
             "input": "World",
-            "msg": "To the world",
+            "msg": "Construct the string 'World'",
             "level": "Warn"
         },
         {
             "aux": {},
             "input": "Hello World",
-            "msg": "Now",
+            "msg": "Concat them and print them out",
             "level": "Info"
         },
         {
@@ -63,7 +63,7 @@ Hello World
         {
             "aux": {},
             "input": "Big bada boom",
-            "msg": "Boom",
+            "msg": "Do a step that will fail badly",
             "level": "Info"
         }
     ],
@@ -72,7 +72,7 @@ Hello World
 }
 Big bada boom
 CallStack (from HasCallStack):
-  error, called at app/Main.hs:14:40 in main:Main
+  error, called at app/Main.hs:14:66 in main:Main
 ```
 
 Say goodbye to forensic investigation, your system is now an omnipresent informant with

@@ -7,11 +7,11 @@ import Lib
 run_ :: IO ()
 run_ = do 
   (l, w) <- runM . runLogger @Log (emptyLog "Do a sample program") . runSafely $ do
-    x <- safely "Say hi" "Hello" return
-    y <- safeWarn "To the world" "World" return Nothing
-    _ <- safely "Now" (x <> " " <> y) putStrLn
+    x <- safely "Construct the string 'Hello'" "Hello" return
+    y <- safeWarn "Construct the string 'World'" "World" return Nothing
+    _ <- safely "Concat them and print them out" (x <> " " <> y) putStrLn
     _ <- safely @Int "Add 2 to 3" 2 (return . (+3))
-    _ <- safely "Boom" "Big bada boom" error
+    _ <- safely "Do a step that will fail badly" "Big bada boom" error
     told @Log ()
   putStrLn . show $ w
   putStrLn . show $ l
