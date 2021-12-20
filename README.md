@@ -3,7 +3,7 @@
 You don't know what you need to log until you need it in the log, and by then it's late.
 
 If you statically enforce attaching a log message, as well as log the input given, to
-every kleisli you evaluate in your primary runtime effect, every evaluation of your
+every kleisli you evaluate in your primary runtime effect, every execution of your
 code can record the equivalent of a step-through debug session in machine and human
 readable format, and life will be beautiful.
 
