@@ -1,0 +1,74 @@
+name:                freer-safely
+version:             0.1.0.0
+github:              "githubuser/freer-safely"
+license:             BSD3
+author:              "Author name here"
+maintainer:          "example@example.com"
+copyright:           "2021 Author name here"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/githubuser/freer-safely#readme>
+
+default-extensions:
+  - DataKinds
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
+  - OverloadedStrings
+  - ScopedTypeVariables
+  - StrictData
+  - TypeApplications
+  - TypeFamilies
+  - TypeOperators
+
+dependencies:
+- base >= 4.7 && < 5
+- aeson
+- aeson-pretty
+- bytestring
+- freer-effects >= 0.3.0.1
+
+library:
+  source-dirs: src
+
+ghc-options:
+  - -Wall
+  - -Wcompat
+  - -Werror
+  - -Wredundant-constraints
+  - -fwarn-incomplete-patterns
+  - -fwarn-incomplete-record-updates
+  - -fwarn-incomplete-uni-patterns
+  - -fwarn-name-shadowing
+
+executables:
+  freer-safely-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - freer-safely
+
+tests:
+  freer-safely-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - freer-safely
