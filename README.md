@@ -65,10 +65,22 @@ Hello World
             "input": "Big bada boom",
             "msg": "Do a step that will fail badly",
             "level": "Info"
+        },
+        {
+            "aux": {
+                "exceptionLines": [
+                    "Big bada boom",
+                    "CallStack (from HasCallStack):",
+                    "  error, called at app/Main.hs:14:66 in main:Main"
+                ]
+            },
+            "input": {},
+            "msg": "Do a step that will fail badly: Exception",
+            "level": "Err"
         }
     ],
     "msg": "Do a sample program",
-    "level": "Warn"
+    "level": "Err"
 }
 Big bada boom
 CallStack (from HasCallStack):

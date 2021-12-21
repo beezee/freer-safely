@@ -66,7 +66,8 @@ liftSafely (Safely msg (Pairf (Identity arg, logArg)) k a l) = do
     t <- send . try $ f x
     case t of
       Left (e :: SomeException) -> 
-        (send . throwIO . LoggedErr . (flip (,) e)) =<< told @Log ()
+        (send . throwIO . LoggedErr . (flip (,) e)) =<< 
+          (flip (<>) (traceAux Err (msg <> ": Exception") e) <$> told @Log ())
       Right r -> return r
 
 runSafely 
