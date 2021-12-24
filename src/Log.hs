@@ -14,8 +14,6 @@ newtype LogSanitized a = LogSanitized Value
 logSanitizedJSON :: LogSanitized a -> Value
 logSanitizedJSON (LogSanitized v) = v
 
-class NoSanitizeNeeded a where
-
 instance ToJSON (LogSanitize Value) where
   toJSON (LogSanitize v) = v
 
