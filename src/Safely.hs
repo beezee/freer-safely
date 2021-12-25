@@ -24,14 +24,14 @@ data Safely r where
 
 safely :: (ToJSON (LogSanitize a), Member Safely effs) => String -> a -> (a -> IO b) -> Eff effs b
 safely msg arg k = send $ Safely msg (Pairf . pr $ arg) k (LogSanitized $ object []) Info
-  where pr = Identity &&& LogSanitized . toJSON . LogSanitize
+  where pr = Identity &&& logSanitize
 
 safeLog_
   :: (Member Safely effs, ToJSON (LogSanitize a))
   => Level -> String -> a -> (a -> IO b) -> Maybe (LogSanitized ()) -> Eff effs b
 safeLog_ l msg arg k a = 
   send $ Safely msg (Pairf . pr $ arg) k (maybe (LogSanitized $ object []) id a) l
-    where pr = Identity &&& LogSanitized . toJSON . LogSanitize 
+    where pr = Identity &&& logSanitize
 
 safeDebug
   :: (Member Safely effs, ToJSON (LogSanitize a))

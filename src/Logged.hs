@@ -17,8 +17,7 @@ logged_
   :: (Member (Compose Logged eff) effs, ToJSON (LogSanitize (eff a)))
   => Level -> String -> eff a -> Maybe (LogSanitized ()) -> Eff effs a
 logged_ l msg arg a = 
-  send . Compose $ Logged msg l (maybe (LogSanitized $ object []) id a) (la, arg)
-    where la = LogSanitized . toJSON . LogSanitize $ arg
+  send . Compose $ Logged msg l (maybe (LogSanitized $ object []) id a) (logSanitize arg, arg)
 
 logged
   :: (Member (Compose Logged eff) effs, ToJSON (LogSanitize (eff a)))
@@ -63,11 +62,26 @@ runLogged nt m = handleRelay return run_ m
       _ <- tell (Log (First msg) (Max l) [Trace msg l a (la $> ())])
       nt fa >>= k
 
-runWithLogged 
+runWithLogged_ 
   :: forall eff effs a
    . Member (Logger Log) (eff ': effs)
   => (forall x. eff x -> Eff effs x)
   -> Eff ((Compose Logged eff) ': eff ': effs) a
   -> Eff effs a
-runWithLogged nt = 
+runWithLogged_ nt = 
   (handleRelay return ((>>=) . nt)) . (runLogged $ raise . nt)
+
+runWithLogged
+  :: forall eff effs a
+   . Member (Logger Log) effs
+  => String
+  -> (forall x. eff x -> Eff effs x)
+  -> Eff (eff ': (Compose Logged eff) ': effs) a
+  -> Eff effs a
+runWithLogged name nt = 
+  (runLogged nt) . (handleRelay return ((>>=) . (toLogged name))) where
+    toLogged :: forall v. String -> eff v -> Eff (Compose Logged eff : effs) v
+    toLogged n fa =
+      send . Compose $ Logged 
+        ("Unlogged " <> n <> " call") Info (LogSanitized (object []))
+        (LogSanitized (object []), fa)

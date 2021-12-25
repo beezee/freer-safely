@@ -27,6 +27,9 @@ instance ToJSON (LogSanitize SomeException) where
   toJSON (LogSanitize e) = object [
     "exceptionLines" .= (toJSON . lines . displayException $ e) ]
 
+logSanitize :: ToJSON (LogSanitize a) => a -> LogSanitized a
+logSanitize a = LogSanitized . toJSON . LogSanitize $ a
+
 unsanitize :: ToJSON a => LogSanitize a -> Value
 unsanitize (LogSanitize a) = toJSON a
 

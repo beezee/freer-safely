@@ -58,6 +58,7 @@ library
 executable freer-safely-exe
   main-is: Main.hs
   other-modules:
+      Math
       Paths_freer_safely
   hs-source-dirs:
       app
