@@ -41,6 +41,7 @@ library
       FlexibleInstances
       GADTs
       OverloadedStrings
+      RankNTypes
       ScopedTypeVariables
       StrictData
       TypeApplications
@@ -53,6 +54,7 @@ library
     , base >=4.7 && <5
     , bytestring
     , freer-effects >=0.3.0.1
+    , text >=1.2.4.1
   default-language: Haskell2010
 
 executable freer-safely-exe
@@ -68,6 +70,7 @@ executable freer-safely-exe
       FlexibleInstances
       GADTs
       OverloadedStrings
+      RankNTypes
       ScopedTypeVariables
       StrictData
       TypeApplications
@@ -81,12 +84,14 @@ executable freer-safely-exe
     , bytestring
     , freer-effects >=0.3.0.1
     , freer-safely
+    , text >=1.2.4.1
   default-language: Haskell2010
 
 test-suite freer-safely-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Math
       Paths_freer_safely
   hs-source-dirs:
       test
@@ -96,6 +101,7 @@ test-suite freer-safely-test
       FlexibleInstances
       GADTs
       OverloadedStrings
+      RankNTypes
       ScopedTypeVariables
       StrictData
       TypeApplications
@@ -103,10 +109,12 @@ test-suite freer-safely-test
       TypeOperators
   ghc-options: -Wall -Wcompat -Werror -Wredundant-constraints -fwarn-incomplete-patterns -fwarn-incomplete-record-updates -fwarn-incomplete-uni-patterns -fwarn-name-shadowing -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aeson
+      QuickCheck >=2.14.2
+    , aeson
     , aeson-pretty
     , base >=4.7 && <5
     , bytestring
     , freer-effects >=0.3.0.1
     , freer-safely
+    , text >=1.2.4.1
   default-language: Haskell2010

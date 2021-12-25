@@ -25,6 +25,7 @@ default-extensions:
   - FlexibleInstances
   - GADTs
   - OverloadedStrings
+  - RankNTypes
   - ScopedTypeVariables
   - StrictData
   - TypeApplications
@@ -37,6 +38,7 @@ dependencies:
 - aeson-pretty
 - bytestring
 - freer-effects >= 0.3.0.1
+- text >= 1.2.4.1
 
 library:
   source-dirs: src
@@ -72,3 +74,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - freer-safely
+    - QuickCheck >= 2.14.2
