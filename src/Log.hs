@@ -9,7 +9,7 @@ import Data.Semigroup
 
 newtype LogSanitize a = LogSanitize a
 newtype LogSanitized a = LogSanitized Value
-  deriving (Show)
+  deriving (Eq, Show)
 
 logSanitizedJSON :: LogSanitized a -> Value
 logSanitizedJSON (LogSanitized v) = v
@@ -57,7 +57,7 @@ instance Ord Level where
 data Trace = Trace { 
   traceMsg :: String , traceLevel :: Level , aux :: LogSanitized (),
   input :: LogSanitized () }
-  deriving (Show)
+  deriving (Eq, Show)
 
 instance ToJSON Trace where
   toJSON t = object [
@@ -67,6 +67,7 @@ instance ToJSON Trace where
 
 data Log = Log { 
   logMsg :: First String , logLevel :: Max Level , logTrace :: [Trace] }
+    deriving (Eq)
 
 instance Show Log where
   show l = unpack . encodePretty . toJSON $ l
