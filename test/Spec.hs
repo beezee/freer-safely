@@ -98,13 +98,17 @@ instance Arbitrary (Math ~> Eff '[Safely, Logger Log, IO]) where
       Add x y -> return . adder $ (x, y)
       Mul x y -> return . multer $ (x, y))
 
+dbl :: (a -> b) -> (a, a) -> (b, b)
+dbl f = f *** f
+
+seqTuple :: Applicative f => (f a, f b) -> f (a, b)
+seqTuple (fa, fb) = (,) <$> fa <*> fb
+
 prop_liftPreservesBehavior 
   :: [LogNoLog (Run Int, Run Int)] 
   -> (Math ~> Eff '[Safely, Logger Log, IO]) -> Property
 prop_liftPreservesBehavior progs (NT interp) = monadicIO $ do
-  (logP, noLogP) <- return . unzip $ unLnl <$> progs
-  (logR, _) <- ev . traverse unRun $ logP
-  (noLogR, _) <- ev . traverse unRun $ noLogP
+  ((logR, _), (noLogR, _)) <- seqTuple $ dbl (ev . traverse unRun) $ unzip $ unLnl <$> progs
   assert $ logR == noLogR
   where
   ev = run . runM . runLogger @Log (emptyLog "test") . runSafely . runWithLogged "Math" interp
