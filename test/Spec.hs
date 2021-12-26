@@ -176,7 +176,7 @@ parseTrace v =
 
 instance {-# OVERLAPPING #-} FromJSON [Run Int] where
   parseJSON = withObject "Log" $ \o -> do
-    pvs <- (o .: "trace" :: Parser [Value])
+    pvs <- o .: "trace"
     ps <- traverse parseTrace pvs
     return . reverse . traces $ ps
     where
