@@ -6,7 +6,6 @@ import Data.Aeson
 import Data.Aeson.Types
 import qualified Data.ByteString.Lazy.Char8 as BL 
 import Data.Functor.Compose
-import Data.Functor.Identity
 import Data.List (intercalate)
 import Data.Text hiding (init, intercalate, reverse)
 import GHC.Exts (fromList)
@@ -168,7 +167,7 @@ parseTrace v =
         m <- o .: "msg"
         l <- (o .: "level") >>= strToLevel
         a <- o .: "aux"
-        return . S $ Safely m (Pairf (Identity i, logSanitize i)) return (LogSanitized a) l) v)
+        return . S $ Safely m i return (LogSanitized a) l) v)
   <|> ((withObject "Trace" $ \o -> do
         l <- o .: "aux" >>= (.: "exceptionLines")
         let e = intercalate "\n" (init . init $ l)
@@ -201,9 +200,11 @@ prop_parseLogIsSection progs (NT interp) = monadicIO $ do
   newProgs <- either (\e -> fail (e <> show logs)) return $ eitherDecode . BL.pack . show $ logs
   (newRes, newLogs) <- ev $ traverse unRun newProgs
   _ <- return $ 
-    if res == newRes then succeeded else failed { reason = show res <> " /= " <> show newRes }
+      if res == newRes then succeeded 
+      else failed { reason = show res <> " /= " <> show newRes }
   return $ 
-    if logs == newLogs then succeeded else failed { reason = show logs <> " /= " <> show newLogs }
+      if logs == newLogs then succeeded
+      else failed { reason = show logs <> " /= " <> show newLogs }
   where
   ev = run . h . runM . runLogger @Log (emptyLog "test") . runSafely 
     . runWithLogged "Math" interp

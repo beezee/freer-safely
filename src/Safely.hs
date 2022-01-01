@@ -1,11 +1,9 @@
 module Safely where
 
-import Control.Arrow
 import Control.Exception
 import Control.Monad.Freer
 import Data.Aeson
 import Data.Functor
-import Data.Functor.Identity
 import Data.Semigroup
 import Log
 import Logger
@@ -15,23 +13,19 @@ data LoggedErr e = LoggedErr (Log, e)
 
 instance Exception e => Exception (LoggedErr e)
 
-newtype Pairf f g a = Pairf (f a , g a)
-
 data Safely r where
   Safely 
-    :: String -> Pairf Identity LogSanitized a -> (a -> IO b)
+    :: ToJSON (LogSanitize a) => String -> a -> (a -> IO b)
     -> LogSanitized () -> Level -> Safely b
 
 safely :: (ToJSON (LogSanitize a), Member Safely effs) => String -> a -> (a -> IO b) -> Eff effs b
-safely msg arg k = send $ Safely msg (Pairf . pr $ arg) k (LogSanitized $ object []) Info
-  where pr = Identity &&& logSanitize
+safely msg arg k = send $ Safely msg arg k (LogSanitized $ object []) Info
 
 safeLog_
   :: (Member Safely effs, ToJSON (LogSanitize a))
   => Level -> String -> a -> (a -> IO b) -> Maybe (LogSanitized ()) -> Eff effs b
 safeLog_ l msg arg k a = 
-  send $ Safely msg (Pairf . pr $ arg) k (maybe (LogSanitized $ object []) id a) l
-    where pr = Identity &&& logSanitize
+  send $ Safely msg arg k (maybe (LogSanitized $ object []) id a) l
 
 safeDebug
   :: (Member Safely effs, ToJSON (LogSanitize a))
@@ -57,8 +51,8 @@ safeErr = safeLog_ Err
 liftSafely 
   :: forall effs a
    . (Member IO effs, Member (Logger Log) effs) => Safely a -> Eff effs a
-liftSafely (Safely msg (Pairf (Identity arg, logArg)) k a l) = do
-  _ <- tell (Log (First msg) (Max l) [Trace msg l a (logArg $> ())])
+liftSafely (Safely msg arg k a l) = do
+  _ <- tell (Log (First msg) (Max l) [Trace msg l a (logSanitize arg  $> ())])
   recover k arg
   where
   recover :: (x -> IO y) -> x -> Eff effs y
